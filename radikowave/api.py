@@ -69,6 +69,21 @@ class RadikoArea(_RadikoArea):
     Okinawa = 47
 
 
+class RadikoStation(object):
+    """Radiko station struct
+    """
+    def __init__(self):
+        self.id = None
+        self.name = None
+
+    @classmethod
+    def from_dom(cls, dom):
+        inst = cls()
+        inst.id = dom.findall('id')[0].text
+        inst.name = dom.findall('name')[0].text
+        return inst
+
+
 class RadikoApi(object):
     """Radiko API caller.
     """
@@ -77,3 +92,13 @@ class RadikoApi(object):
 
     def __init__(self, area=None):
         self.area = area if area is not None else self.DEFAULT_AREA
+
+    def fetch_stations(self):
+        endpoint = '{}/station/list/{}.xml'.format(self.ENDPOINT, self.area.area_id)
+        # TODO: Should return list of struct object.
+        import xml.etree.ElementTree as ET
+        from urllib.request import urlopen
+        resp = urlopen(endpoint)
+        stations_root = ET.fromstring(resp.read())
+        items = stations_root.findall('./station')
+        return [RadikoStation.from_dom(item) for item in items]
