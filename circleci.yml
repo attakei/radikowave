@@ -1,0 +1,8 @@
+machine:
+  python:
+    version: python-3.4.3
+test:
+  pre:
+    - pip install -r tests/requirements.txt
+  override:
+    - py.test
