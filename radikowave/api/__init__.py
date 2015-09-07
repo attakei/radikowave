@@ -1,4 +1,5 @@
 from enum import Enum
+from .exceptions import AreaNotFound
 
 
 __author__ = 'attakei'
@@ -94,7 +95,7 @@ class RadikoApi(object):
         self.area = area if area is not None else self.DEFAULT_AREA
 
     @classmethod
-    def with_area(cls):
+    def auto(cls):
         """Return api with current area information by request to http://radiko.kjp/area
         """
         import re
@@ -110,7 +111,7 @@ class RadikoApi(object):
             if area.value == area_number:
                 return cls(area)
         # TODO: Should raise custom-class
-        raise Exception()
+        raise AreaNotFound()
 
     def fetch_stations(self):
         endpoint = '{}/station/list/{}.xml'.format(self.ENDPOINT, self.area.area_id)
