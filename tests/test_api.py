@@ -1,8 +1,12 @@
 # -*- coding:utf8 -*-
+import os
 import unittest
 from radikowave.api import RadikoApi, RadikoArea, RadikoStation
 
 __author__ = 'attakei'
+
+
+TEST_IN_JAPAN = os.environ.get('TEST_IN_JAPAN') and True
 
 
 class AreaTest(unittest.TestCase):
@@ -61,3 +65,13 @@ class ApiTest(unittest.TestCase):
         self.assertEqual(len(stations), 7)
         for station in stations:
             self.assertIsInstance(station, RadikoStation)
+
+    @unittest.skipIf(not TEST_IN_JAPAN, 'RadikoApi.with_area returns RadikoApi if testing place is in Japan.')
+    def test_with_area_in_japan(self):
+        api = RadikoApi.with_area()
+        self.assertIsInstance(api, RadikoApi)
+
+    @unittest.skipIf(TEST_IN_JAPAN, 'RadikoApi.with_area raise exception if testing place is not in Japan.')
+    def test_with_area_in_not_japan(self):
+        with self.assertRaises(Exception):
+            RadikoApi.with_area()

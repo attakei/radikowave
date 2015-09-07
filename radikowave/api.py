@@ -93,6 +93,25 @@ class RadikoApi(object):
     def __init__(self, area=None):
         self.area = area if area is not None else self.DEFAULT_AREA
 
+    @classmethod
+    def with_area(cls):
+        """Return api with current area information by request to http://radiko.kjp/area
+        """
+        import re
+        from urllib.request import urlopen
+        resp = urlopen('http://radiko.jp/area')
+        resp_body = resp.read()
+        resp_class = re.search(r'class="JP(.+)"', str(resp_body))
+        if resp_class is None:
+            # TODO: Should raise custom-class
+            raise Exception()
+        area_number = int(resp_class.group(1))
+        for area in list(RadikoArea):
+            if area.value == area_number:
+                return cls(area)
+        # TODO: Should raise custom-class
+        raise Exception()
+
     def fetch_stations(self):
         endpoint = '{}/station/list/{}.xml'.format(self.ENDPOINT, self.area.area_id)
         # TODO: Should return list of struct object.
