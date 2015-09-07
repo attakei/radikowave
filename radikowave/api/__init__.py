@@ -104,13 +104,11 @@ class RadikoApi(object):
         resp_body = resp.read()
         resp_class = re.search(r'class="JP(.+)"', str(resp_body))
         if resp_class is None:
-            # TODO: Should raise custom-class
-            raise Exception()
+            raise AreaNotFound()
         area_number = int(resp_class.group(1))
         for area in list(RadikoArea):
             if area.value == area_number:
                 return cls(area)
-        # TODO: Should raise custom-class
         raise AreaNotFound()
 
     def fetch_stations(self):
